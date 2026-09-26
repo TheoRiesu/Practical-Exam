@@ -1,0 +1,49 @@
+// Prisma schema for Membership Lookup and Registry.
+// Provider better-sqlite3 (file:./dev.db) is the Node-side persistent store.
+// The Python app (src/membership_registry) uses stdlib sqlite3 against the SAME
+// SQLite file format, so the .db is interoperable with Prisma/better-sqlite3.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum MembershipType {
+  REGULAR
+  STUDENT
+  SENIOR
+  HONORARY
+  ASSOCIATE
+}
+
+enum MemberStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  EXPIRED
+}
+
+model Member {
+  id             Int            @id @default(autoincrement())
+  memberCode     String         @unique // e.g. M-0001, validated in Python too
+  firstName      String
+  lastName       String
+  email          String         @unique
+  phone          String?
+  dateOfBirth    String?        // ISO YYYY-MM-DD
+  membershipType MembershipType @default(REGULAR)
+  status         MemberStatus   @default(ACTIVE)
+  joinDate       String         // ISO YYYY-MM-DD
+  address        String?
+  notes          String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@index([lastName, firstName])
+  @@index([status])
+  @@index([membershipType])
+}

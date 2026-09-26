@@ -1,0 +1,3 @@
+# stdlib only for the classic CLI (app.py, seed.py, tests).
+# Textual is required ONLY for the interactive app_textual.py.
+textual>=3.0
